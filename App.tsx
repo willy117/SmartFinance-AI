@@ -1,14 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-// Correct modular import for Firebase v9+
-import { onAuthStateChanged } from 'firebase/auth';
+// Import centralized auth functions from our firebase service
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import Transactions from './components/Transactions';
 import Accounts from './components/Accounts';
 import Fortune from './components/Fortune';
 import Auth from './components/Auth';
-import { auth, isConfigured } from './services/firebase';
+import { auth, isConfigured, onAuthStateChanged } from './services/firebase';
 import { dbService } from './services/dbService';
 import { User, BankAccount, Transaction } from './types';
 
@@ -27,7 +26,7 @@ const App: React.FC = () => {
       return;
     }
 
-    // Use modular onAuthStateChanged correctly
+    // Use centralized onAuthStateChanged
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const u: User = { 

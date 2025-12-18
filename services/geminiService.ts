@@ -2,10 +2,15 @@
 import { GoogleGenAI } from "@google/genai";
 import { Transaction, BankAccount, TransactionType } from "../types";
 
-// Function to get financial advice using gemini-3-pro-preview
+// 使用 gemini-3-pro-preview 進行複雜的財務分析
 export const getFinancialAdvice = async (transactions: Transaction[], accounts: BankAccount[]) => {
+  // The API key must be obtained exclusively from the environment variable process.env.API_KEY
+  if (!process.env.API_KEY) {
+    return "【展示模式】目前未設定 API_KEY，無法連結 AI 顧問。請在 GitHub Secrets 中配置 API_KEY 以啟用完整分析。";
+  }
+
   try {
-    // Always use named parameter for apiKey and use process.env.API_KEY directly
+    // Initialization must use a named parameter and process.env.API_KEY directly
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const summary = transactions.reduce((acc, t) => {
@@ -27,30 +32,32 @@ export const getFinancialAdvice = async (transactions: Transaction[], accounts: 
       請使用繁體中文，語氣需精準且具有權威感。
     `;
 
-    // Use gemini-3-pro-preview for complex reasoning tasks
+    // Always use ai.models.generateContent to query GenAI with both the model name and prompt
     const response = await ai.models.generateContent({
       model: 'gemini-3-pro-preview',
       contents: prompt,
     });
 
-    // Access the text property directly (not a method)
+    // Directly access the .text property (do not call as a method)
     return response.text;
   } catch (error) {
     console.error("AI Advice Error:", error);
-    return "理財建議生成失敗，請確認您的 API 配額或網路狀態。";
+    return "AI 顧問暫時無法連線，請稍後再試。";
   }
 };
 
-// Function to get daily fortune using gemini-3-flash-preview
+// 使用 gemini-3-flash-preview 進行簡單的運勢預測
 export const getDailyFortune = async (userName: string) => {
+  if (!process.env.API_KEY) return "今日運勢：財源滾滾 (展示模式)";
+
   try {
-    // Re-initialize with latest API key from environment
+    // Initialization must use a named parameter and process.env.API_KEY directly
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `你是一位幽默的財富命理大師。請為使用者「${userName}」算出今日財運運勢（大吉到末吉）、財位方位與幸運色。請使用繁體中文。`,
     });
-    // Access the text property directly
+    // Directly access the .text property
     return response.text;
   } catch (error) {
     console.error("Daily Fortune Error:", error);

@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
-// Explicitly import modular functions for Firebase v9+ auth
+// Import centralized auth functions from our firebase service to ensure compatibility
 import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  updateProfile 
-} from "firebase/auth";
-import { auth, isConfigured } from '../services/firebase';
+  auth, 
+  isConfigured,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile
+} from '../services/firebase';
 import { User } from '../types';
 
 interface AuthProps {
@@ -42,7 +43,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
     setLoading(true);
     try {
       if (isLogin) {
-        // Correct modular usage passing auth instance as first argument
+        // Correct modular usage using imported functions from service
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const u = userCredential.user;
         onLogin({
